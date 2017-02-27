@@ -15,6 +15,10 @@ var calendar = google.calendar('v3');
 function parseTweet(tweet) {
   var pattern = /^\[(.+)\].*#일시:(\d+)\.(\d+)\.(\d+)\s+(\d+):(\d+)\s?(am|pm)\s+#장소:(.+)\s+#추첨/
   var m = tweet.match(pattern);
+  if (m == null) {
+    return null
+  }
+
   if (m[2].length == 4) {
     var year = m[2];
   } else {
@@ -68,6 +72,10 @@ module.exports = function (ctx, cb) {
 
   var tweet = ctx.body['content']
   var event = parseTweet(tweet);
+  if (event == null) {
+    return cb('tweet did not contain an event')
+  }
+
   event['description'] += '\n\n' + ctx.body['url']
 
   jwtClient.authorize(function (error, tokens) {
