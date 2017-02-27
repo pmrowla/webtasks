@@ -33,6 +33,9 @@ function parseTweet(tweet) {
     day = '0' + day;
   }
   var hour = Number(m[5]);
+  if (hour == 12) {
+    hour = 0;
+  }
   if (m[7] == 'pm') {
     hour += 12;
   }
