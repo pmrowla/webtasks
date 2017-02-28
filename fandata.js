@@ -1,6 +1,6 @@
 // webtask to parse @fandata_b tweets and generate google calendar events
 //
-// expects json input as:
+// expects application/json body:
 // {
 //   'content': <tweet content>,
 //   'url': <original tweet url>
@@ -12,9 +12,12 @@
 var google = require('googleapis');
 var calendar = google.calendar('v3');
 
+// parse a fandata_b tweet and return a google calendar api compatible event
 function parseTweet(tweet) {
   var pattern = /^\[(.+)\].*#일시:(\d+)\.(\d+)\.(\d+)\s+(\d+):(\d+)\s?(am|pm)\s+#장소:(.+)\s+#추첨/
   var m = tweet.match(pattern);
+
+  // ignore tweets which don't match (i.e. @replies)
   if (m == null) {
     return null
   }
@@ -46,7 +49,7 @@ function parseTweet(tweet) {
   }
   var minute = m[6];
 
-  // make iso3601 string so js Date handles the timezone properly (everything is localised to KST)
+  // make iso3601 string so js Date handles the timezone properly (fandata_b times are all KST)
   var isodate = year + '-' + month + '-' + day + 'T' + hour.toString() + ':' + minute + ':00+09:00';
   startDate = new Date(isodate);
   endDate = new Date(startDate.getTime());
